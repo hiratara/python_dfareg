@@ -33,6 +33,34 @@ class TestDFA(unittest.TestCase):
     def tearDown(self):
         pass
 
+class TestRegexp(unittest.TestCase):
+    def setUp(self): pass
+    def tearDown(self): pass
+    def test_normal(self):
+        reg = dfareg.compile(r"(p(erl|ython|hp)|ruby)")
+        self.assert_(reg.matches("python"))
+        self.assert_(reg.matches("ruby"))
+        self.assert_(not reg.matches("VB"))
+    def test_japanese1(self):
+        reg = dfareg.compile(ur"山田(太|一|次|三)郎")
+        self.assert_(reg.matches(u"山田太郎"))
+        self.assert_(reg.matches(u"山田三郎"))
+        self.assert_(not reg.matches("山田郎"))
+    def test_japanese2(self):
+        reg = dfareg.compile(ur"ｗｗ*|\(笑\)")
+        self.assert_(reg.matches(u"(笑)"))
+        self.assert_(reg.matches(u"ｗｗｗ"))
+        self.assert_(not reg.matches(u"笑"))
+    def test_escape(self):
+        reg = dfareg.compile(r"a\c")
+        self.assert_(reg.matches(r"ac"))
+        self.assert_(not reg.matches(r"a\c"))
+        reg = dfareg.compile(r"a\\c")
+        self.assert_(reg.matches(r"a\c"))
+        self.assert_(not reg.matches(r"ac"))
+
 if __name__ == '__main__':
     suite = unittest.makeSuite(TestDFA)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    suite = unittest.makeSuite(TestRegexp)
     unittest.TextTestRunner(verbosity=2).run(suite)
