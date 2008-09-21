@@ -9,7 +9,6 @@ def nfa2dfa(nfa):
         return expand_set(
             set_, 
             lambda e: nfa.transition(e, None), 
-            nfa.states
             )
 
     def transition(set_, alpha):
@@ -19,11 +18,9 @@ def nfa2dfa(nfa):
         return ret
 
     return DeterministicFiniteAutomaton(
-            power(nfa.states),
-            nfa.alphabet,
             transition,
             epsilon_expand( set([ nfa.start ]) ),
-            subsets_including_elem(nfa.states, nfa.accepts)
+            subsets_including_elem(nfa.accepts)
             )
 
 

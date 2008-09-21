@@ -11,8 +11,6 @@ class TestDFA(unittest.TestCase):
             if state == 1 and char == u"う": return 3
             return 4
         self.dfa = dfareg.DeterministicFiniteAutomaton(
-            frozenset([0, 1, 2, 3, 4]),
-            frozenset(u"あいうえお"),
             transition,
             0,
             frozenset([3])

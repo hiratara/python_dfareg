@@ -15,13 +15,9 @@ class NFARuntime(object):
         return expand_set(
             states, 
             lambda e: self.NFA.transition(e, None), 
-            self.NFA.states
             )
 
     def do_transition(self, char):
-        if not char in self.NFA.alphabet: 
-            raise "bad char: %s" % char
-
         next_states = set()
         for state in self.cur_states:
             next_states = next_states.union(
@@ -30,9 +26,6 @@ class NFARuntime(object):
         next_states = self._expand_epsilon(next_states)
 
         self.cur_states = next_states
-
-        if not self.cur_states.issubset(self.NFA.states):
-            raise "bad state. (maybe bad transition function.)"
 
     def is_accept_state(self):
         for state in self.cur_states:
@@ -54,8 +47,6 @@ class NondeterministicFiniteAutomaton(object):
     It's just for fun. So, you shouldn't use this in your products.
     """
     def __init__(self, 
-                 states     , # a finite set of states
-                 alphabet   , # a finite set called the alphabet
                  transition , # a transition function
                  start      , # a start state
                  accepts    , # a set of accept states
@@ -64,22 +55,9 @@ class NondeterministicFiniteAutomaton(object):
         Instanciate new deterministic finite automaton 
         from 5-tuple.
         """
-        self.states     = states
-        self.alphabet   = alphabet
         self.transition = transition
         self.start      = start
         self.accepts    = accepts
-
-        self._check_parameter()
-
-    def _check_parameter(self):
-        """
-        check whether params inputted are correct type.
-        """
-        if not self.start in self.states: 
-            raise "bad start parameter."
-        if not self.accepts.issubset(self.states): 
-            raise "bad accepts parameter."
 
     def get_runtime(self):
         return NFARuntime(self)

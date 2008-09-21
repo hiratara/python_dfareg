@@ -85,24 +85,21 @@ class SubsetsIncludingElem(AbstractSet):
     >>> set([2]) in s
     False
     """
-    def __init__(self, super_, sub):
-        self.super_ = super_
+    def __init__(self, sub):
         self.sub   = sub
     def __contains__(self, a_set):
         try:
-            if not a_set.issubset(self.super_):
-                return False
             if a_set & self.sub:
                 return True
         except TypeError, te:
             # a_set wasn't a set.
             return False
-    def __iter__(self):
-        return iter(
-            set_
-            for set_ in power(self.super_)
-            if set_ in self
-            )
+#     def __iter__(self):
+#         return iter(
+#             set_
+#             for set_ in power(self.super_)
+#             if set_ in self
+#             )
     def issubset(self, set_):
         if(issubclass(type(set_), PowerSet)):
             # XXX 包含関係を真面目に調べると、元集合が大きい時に処理が戻って来ない
@@ -112,7 +109,7 @@ class SubsetsIncludingElem(AbstractSet):
         return super(SubsetsIncludingElem).issubset(set_)
 
 
-def subsets_including_elem(super_, sub):
+def subsets_including_elem(sub):
     """
     >>> from dfareg import algebra
     >>> sie = algebra.subsets_including_elem(set([1,2,3,4]), set([2,3]))
@@ -125,7 +122,7 @@ def subsets_including_elem(super_, sub):
     >>> set([5]) in sie
     False
     """
-    return SubsetsIncludingElem(super_, sub)
+    return SubsetsIncludingElem(sub)
 
 
 class UnicodeSet(AbstractSet):
@@ -143,7 +140,7 @@ class UnicodeSet(AbstractSet):
 unicodeset = UnicodeSet()
 
 
-def expand_set(set_, func, super_):
+def expand_set(set_, func):
     """
     expand set_ with func in super_.
     func: set_ -> power(super_)
@@ -165,7 +162,7 @@ def expand_set(set_, func, super_):
         if elem in returns:
             continue
         returns.add(elem)
-        nexts = func(elem) & super_
+        nexts = func(elem)
         que |= nexts
 
     return returns

@@ -87,8 +87,6 @@ class NFABuilder(object):
             return frozenset(fragment.map.get( (state, char), []))
 
         return nfa.NondeterministicFiniteAutomaton(
-            frozenset(fragment.states),
-            self.alphabet,
             transition,
             fragment.start,
             frozenset(fragment.accepts)
