@@ -58,6 +58,11 @@ class TestRegexp(unittest.TestCase):
         reg = dfareg.compile(r"a\\c")
         self.assert_(reg.matches(r"a\c"))
         self.assert_(not reg.matches(r"ac"))
+    def test_empty_select(self):
+        reg = dfareg.compile(r"a(b|)")
+        self.assert_(reg.matches(r"ab"))
+        self.assert_(reg.matches(r"a"))
+        self.assert_(not reg.matches(r"abb"))
 
 if __name__ == '__main__':
     suite = unittest.makeSuite(TestDFA)
