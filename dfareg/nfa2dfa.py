@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dfa import DeterministicFiniteAutomaton
-from algebra import power, subsets_including_elem, expand_set
+from algebra import subsets_including_elem, expand_set
 
 def nfa2dfa(nfa):
     def epsilon_expand(set_):

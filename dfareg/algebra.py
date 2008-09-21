@@ -1,71 +1,72 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 
-class AbstractSet(object):
-    def issubset(self, set_):
-        for elem in self:
-            if elem not in set_: return False
-        return True
+# class AbstractSet(object):
+#     def issubset(self, set_):
+#         for elem in self:
+#             if elem not in set_: return False
+#         return True
 
 
-# ベキ集合
-class PowerSet(AbstractSet):
-    def __init__(self, a_set):
-        try:
-            hash(a_set)
-        except TypeError:
-            # use frozenset to be able to get hash
-            a_set = frozenset(a_set)
-        self.set = a_set
+# # ベキ集合
+# class PowerSet(AbstractSet):
+#     def __init__(self, a_set):
+#         try:
+#             hash(a_set)
+#         except TypeError:
+#             # use frozenset to be able to get hash
+#             a_set = frozenset(a_set)
+#         self.set = a_set
 
-    def __contains__(self, a_set):
-        try:
-            return self.set.issuperset(a_set)
-        except TypeError, te:
-            # a_set wasn't a set.
-            return False
+#     def __contains__(self, a_set):
+#         try:
+#             return self.set.issuperset(a_set)
+#         except TypeError, te:
+#             # a_set wasn't a set.
+#             return False
 
-    def __iter__(self):
-        # TODO: yeild使って作った方がいい
-        def _power(a_set):
-            try:
-                iter(a_set).next()
-            except StopIteration:
-                # no more element. return phai set.
-                phai = frozenset()
-                return set([ phai ])
+#     def __iter__(self):
+#         # TODO: yeild使って作った方がいい
+#         def _power(a_set):
+#             try:
+#                 iter(a_set).next()
+#             except StopIteration:
+#                 # no more element. return phai set.
+#                 phai = frozenset()
+#                 return set([ phai ])
 
-            ret = set()
-            # car + cdr
-            cdr_set = set(a_set)
-            car_elem = cdr_set.pop()
-            # recursive
-            power_sets = _power(cdr_set)
-            # make power set
-            for set1 in power_sets:
-                set2 = set1.union( set([ car_elem ]) )
-                ret.add(set1)
-                ret.add(set2)
-            return ret
-        return iter(_power(self.set))
+#             ret = set()
+#             # car + cdr
+#             cdr_set = set(a_set)
+#             car_elem = cdr_set.pop()
+#             # recursive
+#             power_sets = _power(cdr_set)
+#             # make power set
+#             for set1 in power_sets:
+#                 set2 = set1.union( set([ car_elem ]) )
+#                 ret.add(set1)
+#                 ret.add(set2)
+#             return ret
+#         return iter(_power(self.set))
 
-def power(a_set):
-    """
-    >>> from dfareg import algebra
-    >>> ps = algebra.power([1,2,3])
-    >>> set([]) in ps
-    True
-    >>> set([1,2,3,4]) in ps
-    False
-    >>> set([1,2,3]) in ps
-    True
-    >>> list(ps)
-    [frozenset([2]), frozenset([3]), frozenset([1, 2]), frozenset([]), frozenset([2, 3]), frozenset([1]), frozenset([1, 3]), frozenset([1, 2, 3])]
-    """
-    return PowerSet(a_set)
+# def power(a_set):
+#     """
+#     >>> from dfareg import algebra
+#     >>> ps = algebra.power([1,2,3])
+#     >>> set([]) in ps
+#     True
+#     >>> set([1,2,3,4]) in ps
+#     False
+#     >>> set([1,2,3]) in ps
+#     True
+#     >>> list(ps)
+#     [frozenset([2]), frozenset([3]), frozenset([1, 2]), frozenset([]), frozenset([2, 3]), frozenset([1]), frozenset([1, 3]), frozenset([1, 2, 3])]
+#     """
+#     return PowerSet(a_set)
 
 
-class SubsetsIncludingElem(AbstractSet):
+# class SubsetsIncludingElem(AbstractSet):
+class SubsetsIncludingElem(object):
     """
     the set of subsets of "super_" including an element of "sub".
 
@@ -100,13 +101,13 @@ class SubsetsIncludingElem(AbstractSet):
 #             for set_ in power(self.super_)
 #             if set_ in self
 #             )
-    def issubset(self, set_):
-        if(issubclass(type(set_), PowerSet)):
-            # XXX 包含関係を真面目に調べると、元集合が大きい時に処理が戻って来ない
-            # 速度稼ぎのための処理。入力がベキ集合であれば、
-            # 元の集合同士が包含関係にあればOK
-            if(self.super_.issubset(set_.set)): return True
-        return super(SubsetsIncludingElem).issubset(set_)
+#     def issubset(self, set_):
+#         if(issubclass(type(set_), PowerSet)):
+#             # XXX 包含関係を真面目に調べると、元集合が大きい時に処理が戻って来ない
+#             # 速度稼ぎのための処理。入力がベキ集合であれば、
+#             # 元の集合同士が包含関係にあればOK
+#             if(self.super_.issubset(set_.set)): return True
+#         return super(SubsetsIncludingElem).issubset(set_)
 
 
 def subsets_including_elem(sub):
@@ -123,21 +124,6 @@ def subsets_including_elem(sub):
     False
     """
     return SubsetsIncludingElem(sub)
-
-
-class UnicodeSet(AbstractSet):
-    """
-    ユニコード文字の集合
-    """
-    def __contains__(self, val):
-        # ordできるものなら文字と見なす
-        try:
-            ord(val)
-            return True
-        except:
-            return False
-
-unicodeset = UnicodeSet()
 
 
 def expand_set(set_, func):

@@ -71,7 +71,7 @@ class AssembleNFA(object):
 
     def __init__(self, talkens):
         self.stack   = list(talkens)
-        self.builder = NFABuilder(algebra.unicodeset)
+        self.builder = NFABuilder()
 
     def _assemble_value(self, value):
         frag = self.builder.new_fragment()

@@ -55,12 +55,11 @@ class NFAFragment(object):
 
 
 class NFABuilder(object):
-    def __init__(self, alphabet, generator = None):
+    def __init__(self, generator = None):
         if generator is None:
             self.generator = NFAStateGenerator()
         else:
             self.generator = generator
-        self.alphabet = alphabet
 
     def generate_state(self):
         return self.generator.new_state()
