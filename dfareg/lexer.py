@@ -85,8 +85,8 @@ class AssembleNFA(object):
     def _assemble_union(self, frag1, frag2):
         frag = self.builder.merge_fragment(frag1, frag2)
         a = frag.new_state()
-        frag.connect(a, None, frag1.start)
-        frag.connect(a, None, frag2.start)
+        frag.connect(a, "", frag1.start)
+        frag.connect(a, "", frag2.start)
         frag.start = a
 
         return frag
@@ -96,7 +96,7 @@ class AssembleNFA(object):
         frag = self.builder.merge_fragment(frag1, frag2)
 
         for state in frag1.accepts:
-            frag.connect(state, None, frag2.start)
+            frag.connect(state, "", frag2.start)
             frag.accepts.remove(state)
 
         frag.start = frag1.start
@@ -106,11 +106,11 @@ class AssembleNFA(object):
 
     def _assemble_star(self, frag):
         for state in frag.accepts:
-            frag.connect(state, None, frag.start)
+            frag.connect(state, "", frag.start)
 
         a = frag.new_state()
         frag.accepts.add(a)
-        frag.connect(a, None, frag.start)
+        frag.connect(a, "", frag.start)
 
         frag.start = a
 
