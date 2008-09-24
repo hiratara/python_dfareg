@@ -53,8 +53,8 @@ def nfa2dfa(nfa):
     def transition(set_, alpha):
         ret = set()
         for elem in set_:
-            ret |= _epsilon_expand(nfa, nfa.transition(elem, alpha) )
-        return ret
+            ret |= nfa.transition(elem, alpha)
+        return _epsilon_expand(nfa, ret)
 
     return DeterministicFiniteAutomaton(
             transition,
