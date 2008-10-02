@@ -38,13 +38,13 @@ class Regexp(object):
         self._compile()
 
     def _compile(self):
-        builder = NFABuilder()
-        lexer_  = Lexer(self.regexp)
-        parser_ = Parser(lexer_, builder)
-        root_fragment = parser_.expr()
-        nfa           = builder.build(root_fragment)
+        lexer_        = Lexer(self.regexp)
+        parser_       = Parser(lexer_)
+        root_node     = parser_.expr()
+        root_fragment = root_node.assemble()
+        # XXX ↓NFABuilder() を直す必要あり。inter.pyと同化？
+        nfa           = NFABuilder().build(root_fragment)
         self.fa       = nfa2dfa(nfa)
-        return 
 
     def matches(self, string):
         return self.fa.get_runtime().does_accept(string)
