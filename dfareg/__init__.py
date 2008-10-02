@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 from dfa import *
 from nfa2dfa import nfa2dfa
-import lexer
+from parser     import Parser
+from nfabuilder import NFABuilder
+from lexer      import Lexer
 
 def strict_match_nfa(regexp, string):
     nfa = lexer.compile_to_nfa(regexp)
@@ -31,9 +33,18 @@ def print_nfa(regexp):
 
 class Regexp(object):
     def __init__(self, regexp):
-        nfa = lexer.compile_to_nfa(regexp)
-        self.fa = nfa2dfa(nfa)
-        # self.fa = nfa
+        self.regexp = regexp
+        self.fa     = None
+        self._compile()
+
+    def _compile(self):
+        builder = NFABuilder()
+        lexer_  = Lexer(self.regexp)
+        parser_ = Parser(lexer_, builder)
+        root_fragment = parser_.expr()
+        nfa           = builder.build(root_fragment)
+        self.fa       = nfa2dfa(nfa)
+        return 
 
     def matches(self, string):
         return self.fa.get_runtime().does_accept(string)
