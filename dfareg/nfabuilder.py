@@ -3,14 +3,6 @@
 
 import nfa
 
-class NFAStateGenerator(object):
-    def __init__(self):
-        self.counter = 0
-
-    def new_state(self):
-        self.counter += 1
-        return self.counter
-
 class NFAFragment(object):
     """
     >>> b = nfa.NFABuilder("abcde")
@@ -37,65 +29,116 @@ class NFAFragment(object):
     frozenset([2])
     >>> 
     """
-    def __init__(self, parent):
-        self.parent  = parent
+    def __init__(self):
         self.accepts = set()
         self.states  = set()
         self.map     = dict()
         self.start   = None  # should be set later
 
-    def new_state(self):
-        state = self.parent.generate_state()
-        self.states.add(state)
-        return state
-
     def connect(self, from_, char, to):
+        if from_ not in self.states: self.states.add(from_)
+        if to    not in self.states: self.states.add(to)
         slot = self.map.setdefault( (from_, char), set() )
         slot.add(to)
 
-
-class NFABuilder(object):
-    def __init__(self, generator = None):
-        if generator is None:
-            self.generator = NFAStateGenerator()
-        else:
-            self.generator = generator
-
-    def generate_state(self):
-        return self.generator.new_state()
-
-    def new_fragment(self):
-        return NFAFragment(self)
-
-    def merge_fragment(self, frag1, frag2):
-        new_frag = self.new_fragment()
-
-        new_frag.accepts = frag1.accepts.union(frag2.accepts)
-        new_frag.states  = frag1.states.union(frag2.states)
-        new_frag.map     = dict()
-        for k, v in frag1.map.iteritems():
-            new_frag.map[k] = v
-        for k, v in frag2.map.iteritems():
-            new_frag.map[k] = v
-
-        return new_frag
-
-
-    def build(self, fragment):
+    def build(self):
         def transition(state, char):
-            return frozenset(fragment.map.get( (state, char), []))
+            return frozenset(self.map.get( (state, char), []))
 
         return nfa.NondeterministicFiniteAutomaton(
             transition,
-            fragment.start,
-            frozenset(fragment.accepts)
+            self.start,
+            frozenset(self.accepts)
             )
 
 
+state_count = 0
+def new_state():
+    global state_count
+    state_count += 1
+    return state_count
+
+def new_fragment():
+    return NFAFragment()
+
+def merge_fragment(frag1, frag2):
+    new_frag = new_fragment()
+
+    new_frag.accepts = frag1.accepts.union(frag2.accepts)
+    new_frag.states  = frag1.states.union(frag2.states)
+    new_frag.map     = dict()
+    for k, v in frag1.map.iteritems():
+        new_frag.map[k] = v
+    for k, v in frag2.map.iteritems():
+        new_frag.map[k] = v
+
+    return new_frag
 
 
+class Union(object):
+    def __init__(self, operand1, operand2):
+        self.operand1 = operand1
+        self.operand2 = operand2
+    def assemble(self):
+        frag1 = self.operand1.assemble()
+        frag2 = self.operand2.assemble()
+        frag = merge_fragment(frag1, frag2)
+
+        a = new_state()
+        frag.connect(a, "", frag1.start)
+        frag.connect(a, "", frag2.start)
+        frag.start = a
+
+        return frag
 
 
+class Concat(object):
+    def __init__(self, operand1, operand2):
+        self.operand1 = operand1
+        self.operand2 = operand2
+
+    def assemble(self):
+        frag1 = self.operand1.assemble()
+        frag2 = self.operand2.assemble()
+        frag = merge_fragment(frag1, frag2)
+
+        for state in frag1.accepts:
+            frag.connect(state, "", frag2.start)
+            frag.accepts.remove(state)
+
+        frag.start = frag1.start
+
+        return frag
+
+class Star(object):
+    def __init__(self, operand):
+        self.operand = operand
+
+    def assemble(self):
+        frag = self.operand.assemble()
+        for state in frag.accepts:
+            frag.connect(state, "", frag.start)
+
+        a = new_state()
+        frag.accepts.add(a)
+        frag.connect(a, "", frag.start)
+
+        frag.start = a
+
+        return frag
+
+class Character(object):
+    def __init__(self, char):
+        self.char = char
+
+    def assemble(self):
+        frag = new_fragment()
+        a = new_state()
+        b = new_state()
+        frag.connect(a, self.char, b)
+        frag.accepts.add(b)
+        frag.start = a
+        return frag
 
 if __name__ == '__main__':
     b = NFABuilder()
@@ -114,4 +157,3 @@ if __name__ == '__main__':
     print am.transition(1, "")
     print am.transition(3, "")
     print am.transition(1, "b")
-

@@ -3,7 +3,6 @@
 from dfa import *
 from nfa2dfa import nfa2dfa
 from parser     import Parser
-from nfabuilder import NFABuilder
 from lexer      import Lexer
 
 def strict_match_nfa(regexp, string):
@@ -40,10 +39,7 @@ class Regexp(object):
     def _compile(self):
         lexer_        = Lexer(self.regexp)
         parser_       = Parser(lexer_)
-        root_node     = parser_.expr()
-        root_fragment = root_node.assemble()
-        # XXX ↓NFABuilder() を直す必要あり。inter.pyと同化？
-        nfa           = NFABuilder().build(root_fragment)
+        nfa           = parser_.expression()
         self.fa       = nfa2dfa(nfa)
 
     def matches(self, string):
