@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 
-VALUE      = 0
+CHARACTER      = 0
 OPE_UNION  = 1
 OPE_STAR   = 2
 LPAREN     = 3
@@ -26,7 +26,7 @@ class Lexer(object):
         ch = self.string_list.pop(0)
 
         if ch == u'\\':
-            return Talken(self.string_list.pop(0), VALUE)
+            return Talken(self.string_list.pop(0), CHARACTER)
         elif ch == u'|': 
             return Talken(ch, OPE_UNION)
         elif ch == u'(': 
@@ -36,7 +36,7 @@ class Lexer(object):
         elif ch == u'*': 
             return Talken(ch, OPE_STAR)
         else: 
-            return Talken(ch, VALUE)
+            return Talken(ch, CHARACTER)
 
 if __name__ == '__main__':
     lexer = Lexer(u"あ(い\|う|え*(かき|くけこ))*お")

@@ -36,7 +36,7 @@ class NFAFragment(object):
         self.start   = None  # should be set later
 
     def new_state(self):
-        state = self.context.genarate_state()
+        state = self.context.generate_state()
         self.states.add(state)
         return state
 

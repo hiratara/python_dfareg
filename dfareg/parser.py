@@ -9,7 +9,7 @@ class Parser(object):
     subexpr    -> seq '|' subexpr | seq
     seq        -> star seq | ε
     star       -> factor '*' | factor
-    factor     -> '(' subexpr ')' | VALUE
+    factor     -> '(' subexpr ')' | CHARACTER
     """
 
     def __init__(self, lexer):
@@ -39,7 +39,7 @@ class Parser(object):
         return node
 
     def seq(self):
-        if self.look.kind == lexer.LPAREN or self.look.kind == lexer.VALUE:
+        if self.look.kind == lexer.LPAREN or self.look.kind == lexer.CHARACTER:
             node1 = self.star()
             node2 = self.seq()
             node  = nfabuilder.Concat(node1, node2)
@@ -60,9 +60,9 @@ class Parser(object):
             node = self.subexpr()
             self.match(lexer.RPAREN)
             return node
-        elif self.look.kind == lexer.VALUE:
+        elif self.look.kind == lexer.CHARACTER:
             node = nfabuilder.Character(self.look.value)
-            self.match(lexer.VALUE);
+            self.match(lexer.CHARACTER);
             return node
         else:
             raise "syntax error"
