@@ -5,7 +5,7 @@ from nfabuilder import Character, Star, Concat, Union, Context
 
 class Parser(object):
     """
-    NFAを組み立てる
+    構文解析器
     expression -> subexpr
     subexpr    -> seq '|' subexpr | seq
     seq        -> star seq | ε
@@ -16,22 +16,32 @@ class Parser(object):
     def __init__(self, lexer):
         self.lexer   = lexer
         self.look    = None
+        # 最初の文字を読む
         self.move()
 
     def match(self, tag):
-        if self.look.kind != tag: raise "syntax error"
+        if self.look.kind != tag: 
+            # 予期せぬトークンが来たら、エラー終了
+            raise "syntax error"
         self.move()
 
     def move(self):
         self.look = self.lexer.scan()
 
     def expression(self):
+        # expression -> subexpr
         node     = self.subexpr()
+
+        # トークンがすべて処理されたか
+        self.match(Talken.EOF)
+
+        # 構文木を実行し、NFAを作る
         context  = Context()
         fragment = node.assemble(context)
         return fragment.build()
 
     def subexpr(self):
+        # subexpr    -> seq '|' subexpr | seq
         node = self.seq()
         if self.look.kind == Talken.OPE_UNION:
             self.match(Talken.OPE_UNION)
@@ -42,14 +52,16 @@ class Parser(object):
     def seq(self):
         if self.look.kind == Talken.LPAREN \
            or self.look.kind == Talken.CHARACTER:
+            # seq -> star seq
             node1 = self.star()
             node2 = self.seq()
             node  = Concat(node1, node2)
             return node
-        # NOP (ε)
+        # seq -> ''
         return Character("")
 
     def star(self):
+        # star -> factor '*' | factor
         node = self.factor()
         if self.look.kind == Talken.OPE_STAR:
             self.match(Talken.OPE_STAR)
@@ -58,11 +70,13 @@ class Parser(object):
 
     def factor(self):
         if self.look.kind == Talken.LPAREN:
+            # factor -> '(' subexpr ')'
             self.match(Talken.LPAREN)
             node = self.subexpr()
             self.match(Talken.RPAREN)
             return node
         elif self.look.kind == Talken.CHARACTER:
+            # factor -> CHARACTER
             node = Character(self.look.value)
             self.match(Talken.CHARACTER);
             return node
