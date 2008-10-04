@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
-import lexer, nfabuilder
+from lexer import Talken
+from nfabuilder import Character, Star, Concat, Union, Context
 
 class Parser(object):
     """
@@ -26,43 +27,44 @@ class Parser(object):
 
     def expression(self):
         node     = self.subexpr()
-        context  = nfabuilder.Context()
+        context  = Context()
         fragment = node.assemble(context)
         return fragment.build()
 
     def subexpr(self):
         node = self.seq()
-        if self.look.kind == lexer.OPE_UNION:
-            self.match(lexer.OPE_UNION)
+        if self.look.kind == Talken.OPE_UNION:
+            self.match(Talken.OPE_UNION)
             node2 = self.subexpr()
-            node = nfabuilder.Union(node, node2)
+            node = Union(node, node2)
         return node
 
     def seq(self):
-        if self.look.kind == lexer.LPAREN or self.look.kind == lexer.CHARACTER:
+        if self.look.kind == Talken.LPAREN \
+           or self.look.kind == Talken.CHARACTER:
             node1 = self.star()
             node2 = self.seq()
-            node  = nfabuilder.Concat(node1, node2)
+            node  = Concat(node1, node2)
             return node
         # NOP (ε)
-        return nfabuilder.Character("")
+        return Character("")
 
     def star(self):
         node = self.factor()
-        if self.look.kind == lexer.OPE_STAR:
-            self.match(lexer.OPE_STAR)
-            node = nfabuilder.Star(node)
+        if self.look.kind == Talken.OPE_STAR:
+            self.match(Talken.OPE_STAR)
+            node = Star(node)
         return node
 
     def factor(self):
-        if self.look.kind == lexer.LPAREN:
-            self.match(lexer.LPAREN)
+        if self.look.kind == Talken.LPAREN:
+            self.match(Talken.LPAREN)
             node = self.subexpr()
-            self.match(lexer.RPAREN)
+            self.match(Talken.RPAREN)
             return node
-        elif self.look.kind == lexer.CHARACTER:
-            node = nfabuilder.Character(self.look.value)
-            self.match(lexer.CHARACTER);
+        elif self.look.kind == Talken.CHARACTER:
+            node = Character(self.look.value)
+            self.match(Talken.CHARACTER);
             return node
         else:
             raise "syntax error"
