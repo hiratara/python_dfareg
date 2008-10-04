@@ -26,7 +26,8 @@ class Parser(object):
 
     def expression(self):
         node     = self.subexpr()
-        fragment = node.assemble()
+        context  = nfabuilder.Context()
+        fragment = node.assemble(context)
         return fragment.build()
 
     def subexpr(self):
