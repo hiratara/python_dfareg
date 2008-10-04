@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 
-CHARACTER      = 0
+CHARACTER  = 0
 OPE_UNION  = 1
 OPE_STAR   = 2
 LPAREN     = 3
