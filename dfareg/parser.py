@@ -22,17 +22,15 @@ class Parser(object):
     def match(self, tag):
         if self.look.kind != tag: 
             # 予期せぬトークンが来たら、エラー終了
-            raise "syntax error"
+            raise Exception("syntax error")
         self.move()
 
     def move(self):
         self.look = self.lexer.scan()
 
     def expression(self):
-        # expression -> subexpr
-        node     = self.subexpr()
-
-        # トークンがすべて処理されたか
+        # expression -> subexpr EOF
+        node = self.subexpr()
         self.match(Talken.EOF)
 
         # 構文木を実行し、NFAを作る
@@ -57,8 +55,9 @@ class Parser(object):
             node2 = self.seq()
             node  = Concat(node1, node2)
             return node
-        # seq -> ''
-        return Character("")
+        else:
+            # seq -> ''
+            return Character("")
 
     def star(self):
         # star -> factor '*' | factor
@@ -75,13 +74,11 @@ class Parser(object):
             node = self.subexpr()
             self.match(Talken.RPAREN)
             return node
-        elif self.look.kind == Talken.CHARACTER:
+        else:
             # factor -> CHARACTER
             node = Character(self.look.value)
             self.match(Talken.CHARACTER);
             return node
-        else:
-            raise "syntax error"
 
 
 if __name__ == '__main__':

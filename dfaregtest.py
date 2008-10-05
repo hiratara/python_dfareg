@@ -61,6 +61,15 @@ class TestRegexp(unittest.TestCase):
         self.assert_(reg.matches(r"ab"))
         self.assert_(reg.matches(r"a"))
         self.assert_(not reg.matches(r"abb"))
+    def test_syntax_error(self):
+        import sys
+        for regexp in ['ab(cd', 'e(*)f', ')h', 'i|*', '*']:
+            err = None
+            try:
+                reg = dfareg.compile(regexp)
+            except Exception, e:
+                err = e
+            self.assert_(str(err) == 'syntax error')
 
 if __name__ == '__main__':
     suite = unittest.makeSuite(TestDFA)
