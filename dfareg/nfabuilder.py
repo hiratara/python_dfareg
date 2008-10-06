@@ -31,13 +31,11 @@ class NFAFragment(object):
     def __init__(self, context):
         self.context = context
         self.accepts = set()
-        self.states  = set()
         self.map     = dict()
         self.start   = None  # should be set later
 
     def new_state(self):
         state = self.context.generate_state()
-        self.states.add(state)
         return state
 
     def connect(self, from_, char, to):
@@ -50,7 +48,6 @@ class NFAFragment(object):
 
         new_frag = self.context.new_fragment()
         new_frag.accepts = self.accepts.union(frag.accepts)
-        new_frag.states  = self.states.union(frag.states)
         new_frag.map     = dict()
         for k, v in self.map.iteritems():
             new_frag.map[k] = v
