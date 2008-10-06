@@ -46,7 +46,7 @@ class NFAFragment(object):
 
     def __or__(self, frag):
         if frag.context is not self.context:
-            raise "cant merge other context fragment"
+            raise Exception("can't merge other context fragment")
 
         new_frag = self.context.new_fragment()
         new_frag.accepts = self.accepts.union(frag.accepts)
