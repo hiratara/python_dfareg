@@ -32,8 +32,8 @@ class NFAFragment(object):
     def __init__(self, context):
         self.context = context
         self.map     = dict()
-        self.accepts = None  # should be set later
-        self.start   = None  # should be set later
+        self.accepts = None  # frozenset型
+        self.start   = None  # 整数型
 
     def connect(self, from_, char, to):
         slot = self.map.setdefault( (from_, char), set() )
@@ -41,7 +41,7 @@ class NFAFragment(object):
 
     def __or__(self, frag):
         if frag.context is not self.context:
-            raise Exception("can't merge other context fragment")
+            raise Exception("can't merge fragments in other contexts")
 
         new_frag = self.new_skelton()
         for k, v in frag.map.iteritems():
