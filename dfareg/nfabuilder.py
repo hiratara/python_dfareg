@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 import nfa
+import copy
 
 class NFAFragment(object):
     """
@@ -30,8 +31,8 @@ class NFAFragment(object):
     """
     def __init__(self, context):
         self.context = context
-        self.accepts = set()
         self.map     = dict()
+        self.accepts = None  # should be set later
         self.start   = None  # should be set later
 
     def new_state(self):
@@ -47,13 +48,19 @@ class NFAFragment(object):
             raise Exception("can't merge other context fragment")
 
         new_frag = self.context.new_fragment()
-        new_frag.accepts = self.accepts.union(frag.accepts)
+
         new_frag.map     = dict()
         for k, v in self.map.iteritems():
-            new_frag.map[k] = v
+            new_frag.map[k] = copy.copy(v)
         for k, v in frag.map.iteritems():
-            new_frag.map[k] = v
+            new_frag.map[k] = copy.copy(v)
 
+        return new_frag
+
+    def new_skelton(self):
+        # コピーして返す
+        new_frag = self.context.new_fragment()
+        new_frag.map = copy.deepcopy(self.map)
         return new_frag
 
     def build(self):
@@ -92,7 +99,9 @@ class Union(object):
         a = frag.new_state()
         frag.connect(a, "", frag1.start)
         frag.connect(a, "", frag2.start)
+
         frag.start = a
+        frag.accepts = frag1.accepts | frag2.accepts
 
         return frag
 
@@ -109,9 +118,9 @@ class Concat(object):
 
         for state in frag1.accepts:
             frag.connect(state, "", frag2.start)
-            frag.accepts.remove(state)
 
-        frag.start = frag1.start
+        frag.start   = frag1.start
+        frag.accepts = frag2.accepts
 
         return frag
 
@@ -120,15 +129,17 @@ class Star(object):
         self.operand = operand
 
     def assemble(self, context):
-        frag = self.operand.assemble(context)
-        for state in frag.accepts:
-            frag.connect(state, "", frag.start)
+        frag_orig = self.operand.assemble(context)
+        frag = frag_orig.new_skelton()
+
+        for state in frag_orig.accepts:
+            frag.connect(state, "", frag_orig.start)
 
         a = frag.new_state()
-        frag.accepts.add(a)
-        frag.connect(a, "", frag.start)
+        frag.connect(a, "", frag_orig.start)
 
         frag.start = a
+        frag.accepts = frag_orig.accepts | set([a])
 
         return frag
 
@@ -141,8 +152,10 @@ class Character(object):
         a = frag.new_state()
         b = frag.new_state()
         frag.connect(a, self.char, b)
-        frag.accepts.add(b)
+
         frag.start = a
+        frag.accepts = set([b])
+
         return frag
 
 
