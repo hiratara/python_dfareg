@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 import nfa
-import copy
+from copy import deepcopy
 
 class NFAFragment(object):
     """
@@ -35,10 +35,6 @@ class NFAFragment(object):
         self.accepts = None  # should be set later
         self.start   = None  # should be set later
 
-    def new_state(self):
-        state = self.context.generate_state()
-        return state
-
     def connect(self, from_, char, to):
         slot = self.map.setdefault( (from_, char), set() )
         slot.add(to)
@@ -47,30 +43,27 @@ class NFAFragment(object):
         if frag.context is not self.context:
             raise Exception("can't merge other context fragment")
 
-        new_frag = self.context.new_fragment()
-
-        new_frag.map     = dict()
-        for k, v in self.map.iteritems():
-            new_frag.map[k] = copy.copy(v)
+        new_frag = self.new_skelton()
         for k, v in frag.map.iteritems():
-            new_frag.map[k] = copy.copy(v)
+            new_frag.map[k] = v.copy()
 
         return new_frag
 
     def new_skelton(self):
         # コピーして返す
-        new_frag = self.context.new_fragment()
-        new_frag.map = copy.deepcopy(self.map)
+        new_frag = NFAFragment(self.context)
+        new_frag.map = deepcopy(self.map)
         return new_frag
 
     def build(self):
+        map_ = self.map
         def transition(state, char):
-            return frozenset(self.map.get( (state, char), []))
+            return frozenset(map_.get( (state, char), []))
 
         return nfa.NondeterministicFiniteAutomaton(
             transition,
             self.start,
-            frozenset(self.accepts)
+            self.accepts
             )
 
 
@@ -81,7 +74,7 @@ class Context(object):
     def new_fragment(self):
         return NFAFragment(self)
 
-    def generate_state(self):
+    def new_state(self):
         self._state_count += 1
         return self._state_count
 
@@ -96,7 +89,7 @@ class Union(object):
         frag2 = self.operand2.assemble(context)
         frag = frag1 | frag2
 
-        a = frag.new_state()
+        a = context.new_state()
         frag.connect(a, "", frag1.start)
         frag.connect(a, "", frag2.start)
 
@@ -135,11 +128,11 @@ class Star(object):
         for state in frag_orig.accepts:
             frag.connect(state, "", frag_orig.start)
 
-        a = frag.new_state()
+        a = context.new_state()
         frag.connect(a, "", frag_orig.start)
 
         frag.start = a
-        frag.accepts = frag_orig.accepts | set([a])
+        frag.accepts = frag_orig.accepts | frozenset([a])
 
         return frag
 
@@ -149,12 +142,12 @@ class Character(object):
 
     def assemble(self, context):
         frag = context.new_fragment()
-        a = frag.new_state()
-        b = frag.new_state()
+        a = context.new_state()
+        b = context.new_state()
         frag.connect(a, self.char, b)
 
         frag.start = a
-        frag.accepts = set([b])
+        frag.accepts = frozenset([b])
 
         return frag
 
