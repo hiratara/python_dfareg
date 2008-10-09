@@ -29,30 +29,26 @@ class NFAFragment(object):
     frozenset([2])
     >>> 
     """
-    def __init__(self, context):
-        self.context = context
-        self.map     = dict()
-        self.accepts = None  # frozenset型
+    def __init__(self):
         self.start   = None  # 整数型
+        self.accepts = None  # frozenset型
+        self.map     = dict()
 
     def connect(self, from_, char, to):
         slot = self.map.setdefault( (from_, char), set() )
         slot.add(to)
 
-    def __or__(self, frag):
-        if frag.context is not self.context:
-            raise Exception("can't merge fragments in other contexts")
+    def new_skelton(self):
+        # コピーして返す
+        new_frag = NFAFragment()
+        new_frag.map = deepcopy(self.map)
+        return new_frag
 
+    def __or__(self, frag):
         new_frag = self.new_skelton()
         for k, v in frag.map.iteritems():
             new_frag.map[k] = v.copy()
 
-        return new_frag
-
-    def new_skelton(self):
-        # コピーして返す
-        new_frag = NFAFragment(self.context)
-        new_frag.map = deepcopy(self.map)
         return new_frag
 
     def build(self):
@@ -70,9 +66,6 @@ class NFAFragment(object):
 class Context(object):
     def __init__(self):
         self._state_count = 0
-
-    def new_fragment(self):
-        return NFAFragment(self)
 
     def new_state(self):
         self._state_count += 1
@@ -141,7 +134,7 @@ class Character(object):
         self.char = char
 
     def assemble(self, context):
-        frag = context.new_fragment()
+        frag = NFAFragment()
         a = context.new_state()
         b = context.new_state()
         frag.connect(a, self.char, b)
