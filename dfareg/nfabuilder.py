@@ -1,34 +1,8 @@
-#!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 import nfa
 from copy import deepcopy
 
 class NFAFragment(object):
-    """
-    >>> b = nfa.NFABuilder("abcde")
-    >>> b.start
-    1
-    >>> s1 = b.new_state()
-    >>> s2 = b.new_state()
-    >>> b.connect(b.start, None, s2)
-    >>> b.connect(b.start, "b", s1)
-    >>> b.accepting_state(b.start)
-    >>> b.accepting_state(s2)
-    >>> am = b.build()
-    >>> am.start
-    1
-    >>> am.accepts
-    frozenset([1, 3])
-    >>> am.states
-    frozenset([1, 2, 3])
-    >>> am.transition(1, None)
-    frozenset([3])
-    >>> am.transition(3, None)
-    frozenset([])
-    >>> am.transition(1, "b")
-    frozenset([2])
-    >>> 
-    """
     def __init__(self):
         self.start   = None  # 整数型
         self.accepts = None  # frozenset型
@@ -143,24 +117,3 @@ class Character(object):
         frag.accepts = frozenset([b])
 
         return frag
-
-
-
-
-if __name__ == '__main__':
-    b = NFABuilder()
-    f = b.new_fragment()
-    print f.start
-    s1 = f.new_state()
-    s2 = f.new_state()
-    f.connect(f.start, "", s2)
-    f.connect(f.start, "b", s1)
-    f.accepts.add(f.start)
-    f.accepts.add(s2)
-    am = b.build(f)
-    print am.start
-    print am.accepts
-    # print am.states
-    print am.transition(1, "")
-    print am.transition(3, "")
-    print am.transition(1, "b")

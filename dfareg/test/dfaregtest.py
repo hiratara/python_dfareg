@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 import dfareg
+from dfareg.dfa import DeterministicFiniteAutomaton
 import unittest
 
 class TestDFA(unittest.TestCase):
@@ -10,7 +11,7 @@ class TestDFA(unittest.TestCase):
             if state == 1 and char == u"あ": return 2
             if state == 1 and char == u"う": return 3
             return 4
-        self.dfa = dfareg.DeterministicFiniteAutomaton(
+        self.dfa = DeterministicFiniteAutomaton(
             transition,
             0,
             frozenset([3])

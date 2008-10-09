@@ -1,7 +1,4 @@
-#!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
-
-
 
 class Talken(object):
     # トークンの種類
@@ -47,10 +44,3 @@ class Lexer(object):
         else: 
             # 通常の文字
             return Talken(ch, Talken.CHARACTER)
-
-if __name__ == '__main__':
-    lexer = Lexer(u"あ(い\|う|え*(かき|くけこ))*お")
-    while True:
-        talken = lexer.scan()
-        if not talken: break
-        print talken

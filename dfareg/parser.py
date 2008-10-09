@@ -1,4 +1,3 @@
-#!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
 from lexer import Talken
 from nfabuilder import Character, Star, Concat, Union, Context
@@ -79,10 +78,3 @@ class Parser(object):
             node = Character(self.look.value)
             self.match(Talken.CHARACTER);
             return node
-
-
-if __name__ == '__main__':
-    from nfabuilder import NFABuilder
-    lexer_ = lexer.Lexer(u"あ(い\|う|え*(かき|くけこ))*お")
-    parser = Parser(lexer_, NFABuilder() )
-    parser.expression()
