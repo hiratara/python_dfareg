@@ -56,11 +56,11 @@ class Union(object):
         frag2 = self.operand2.assemble(context)
         frag = frag1 | frag2
 
-        a = context.new_state()
-        frag.connect(a, "", frag1.start)
-        frag.connect(a, "", frag2.start)
+        s = context.new_state()
+        frag.connect(s, "", frag1.start)
+        frag.connect(s, "", frag2.start)
 
-        frag.start = a
+        frag.start = s
         frag.accepts = frag1.accepts | frag2.accepts
 
         return frag
@@ -95,11 +95,11 @@ class Star(object):
         for state in frag_orig.accepts:
             frag.connect(state, "", frag_orig.start)
 
-        a = context.new_state()
-        frag.connect(a, "", frag_orig.start)
+        s = context.new_state()
+        frag.connect(s, "", frag_orig.start)
 
-        frag.start = a
-        frag.accepts = frag_orig.accepts | frozenset([a])
+        frag.start = s
+        frag.accepts = frag_orig.accepts | frozenset([s])
 
         return frag
 
@@ -109,11 +109,11 @@ class Character(object):
 
     def assemble(self, context):
         frag = NFAFragment()
-        a = context.new_state()
-        b = context.new_state()
-        frag.connect(a, self.char, b)
+        s1 = context.new_state()
+        s2 = context.new_state()
+        frag.connect(s1, self.char, s2)
 
-        frag.start = a
-        frag.accepts = frozenset([b])
+        frag.start = s1
+        frag.accepts = frozenset([s2])
 
         return frag
