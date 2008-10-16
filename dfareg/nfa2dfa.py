@@ -13,10 +13,10 @@ def nfa2dfa(nfa):
         ret = set()
         for elem in set_:
             ret |= nfa.transition(elem, alpha)
-        return nfa.epsilon_expand(ret)
+        return nfa.epsilon_expand( frozenset(ret) )
 
     return DeterministicFiniteAutomaton(
             transition,
-            nfa.epsilon_expand(set([ nfa.start ]) ),
+            nfa.epsilon_expand( frozenset([ nfa.start ]) ),
             SubsetsIncludingElem(nfa.accepts)
             )

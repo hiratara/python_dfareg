@@ -30,4 +30,4 @@ class NondeterministicFiniteAutomaton(object):
                 # 辿り終わってない要素だけ
                 if not next_stat in done: que.add(next_stat)
 
-        return done
+        return frozenset( done )
