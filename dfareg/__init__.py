@@ -7,23 +7,22 @@ class Regexp(object):
     def __init__(self, regexp, debug=False):
         self.regexp = regexp
         self.fa     = None
-        self.debug  = debug
-        self._compile()
+        self._compile(debug)
 
-    def _compile(self):
+    def _compile(self, debug=False):
         lexer_        = Lexer(self.regexp)
         parser_       = Parser(lexer_)
         nfa           = parser_.expression()
         self.dfa       = nfa2dfa(nfa)
-        if self.debug:
+        if debug:
             from dump import dump_nfa, dump_dfa
             print "[NFA]"
             dump_nfa(nfa)
             print "[DFA]"
             dump_dfa(self.dfa)
 
-    def matches(self, string):
-        runtime = self.dfa.get_runtime(debug=self.debug)
+    def matches(self, string, debug=False):
+        runtime = self.dfa.get_runtime(debug)
         return runtime.does_accept(string)
 
 def compile(regexp, debug=False):

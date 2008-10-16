@@ -14,12 +14,12 @@ def dump_dfa(dfa):
     done = set()
     while que:
         cur_stat = que.pop()
-        if cur_stat == dfa.start  : print "[S]",
-        if cur_stat in dfa.accepts: print "[A]",
-        print stat2str(cur_stat),
+        if cur_stat == dfa.start  : print u"開始",
+        if cur_stat in dfa.accepts: print u"受理",
+        print u"状態", stat2str(cur_stat),
         print
         done.add( frozenset(cur_stat) )
-        for chr_ in _all_items([''], ( unichr(i) for i in xrange(0, 0x10000) )):
+        for chr_ in ( unichr(i) for i in xrange(0, 0x10000) ):
             next_stat = dfa.transition(cur_stat, chr_)
             if not next_stat:
                 # 空集合状態に向かう遷移は略記
@@ -35,9 +35,9 @@ def dump_nfa(nfa):
     done = set()
     while que:
         cur_stat = que.pop()
-        if cur_stat == nfa.start  : print "[S]",
-        if cur_stat in nfa.accepts: print "[A]",
-        print stat2str(cur_stat),
+        if cur_stat == nfa.start  : print u"開始",
+        if cur_stat in nfa.accepts: print u"受理",
+        print u"状態", stat2str(cur_stat),
         print
         done.add( cur_stat )
         for chr_ in _all_items([''], ( unichr(i) for i in xrange(0, 0x10000) )):
@@ -47,17 +47,3 @@ def dump_nfa(nfa):
 
                 if next_stat not in done:
                     que.add( next_stat )
-
-if __name__ == '__main__':
-    #regexp = ur'(おはよう(ございます|)|こん(にち|ばん)(わ|は))*';
-    regexp = ur'ab*c';
-
-    lexer_  = Lexer(regexp)
-    parser_ = Parser(lexer_)
-    nfa     = parser_.expression()
-    dump_nfa(nfa)
-    dfa     = nfa2dfa(nfa)
-    dump_dfa(dfa)
-
-    #if dfa.get_runtime().does_accept(u"こんにちわおはようこんばんは"):
-    #    print "match!"
