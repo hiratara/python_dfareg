@@ -6,7 +6,7 @@ from lexer   import Lexer
 class Regexp(object):
     def __init__(self, regexp, debug=False):
         self.regexp = regexp
-        self.fa     = None
+        self.dfa    = None
         self._compile(debug)
 
     def _compile(self, debug=False):
