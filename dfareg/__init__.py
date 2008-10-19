@@ -13,7 +13,7 @@ class Regexp(object):
         lexer_        = Lexer(self.regexp)
         parser_       = Parser(lexer_)
         nfa           = parser_.expression()
-        self.dfa       = nfa2dfa(nfa)
+        self.dfa      = nfa2dfa(nfa)
         if debug:
             from dump import dump_nfa, dump_dfa
             print "[NFA]"
