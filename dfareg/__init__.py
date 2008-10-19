@@ -10,9 +10,11 @@ class Regexp(object):
         self._compile(debug)
 
     def _compile(self, debug=False):
+        # コンパイル
         lexer_        = Lexer(self.regexp)
         parser_       = Parser(lexer_)
         nfa           = parser_.expression()
+        # 部分集合構成法
         self.dfa      = nfa2dfa(nfa)
         if debug:
             from dump import dump_nfa, dump_dfa
