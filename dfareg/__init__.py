@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nfa2dfa import nfa2dfa
+import nfa2dfa
 from parser  import Parser
 from lexer   import Lexer
 
@@ -15,7 +15,7 @@ class Regexp(object):
         parser_       = Parser(lexer_)
         nfa           = parser_.expression()
         # 部分集合構成法
-        self.dfa      = nfa2dfa(nfa)
+        self.dfa      = nfa2dfa.nfa2dfa(nfa)
         if debug:
             from dump import dump_nfa, dump_dfa
             print "[NFA]"

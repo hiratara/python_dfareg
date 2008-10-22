@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dfa import DeterministicFiniteAutomaton
+import memoize
 
 class SubsetsIncludingElem(object):
     def __init__(self, sub):
@@ -9,6 +10,7 @@ class SubsetsIncludingElem(object):
 
 
 def nfa2dfa(nfa):
+    @memoize.memoize
     def transition(set_, alpha):
         ret = set()
         for elem in set_:
