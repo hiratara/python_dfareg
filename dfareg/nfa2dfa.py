@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+subset construction.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 from dfa import DeterministicFiniteAutomaton
 import memoize
 

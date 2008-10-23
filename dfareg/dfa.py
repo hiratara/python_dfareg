@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-
+"""
+DFA definitions.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 class DFARuntime(object):
     def __init__(self, DFA, debug=False):
         self.DFA   = DFA

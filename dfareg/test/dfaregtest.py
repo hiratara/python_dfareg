@@ -1,5 +1,11 @@
 #!/usr/bin/env python2.5
 # -*- coding: utf-8 -*-
+"""
+tests for dfareg.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
+
 import dfareg
 from dfareg.dfa import DeterministicFiniteAutomaton
 import unittest

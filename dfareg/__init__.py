@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+dfareg: tiny DFA regular expression engine.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 import nfa2dfa
 from parser  import Parser
 from lexer   import Lexer

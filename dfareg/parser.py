@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+parse regular expressions
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 from lexer import Talken
 from nfabuilder import Character, Star, Concat, Union, Context
 
 class Parser(object):
     """
-    構文解析器
+    parse following language
+    ----------------------------------------
     expression -> subexpr
     subexpr    -> seq '|' subexpr | seq
     seq        -> star seq | ε

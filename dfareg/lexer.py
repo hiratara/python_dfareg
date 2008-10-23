@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+regular expression lexical analyzer
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 
 class Talken(object):
     # トークンの種類

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-
+"""
+NFA definition
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 class NondeterministicFiniteAutomaton(object):
     def __init__(self, 
                  transition , # a transition function

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+build NFA by using Interpreter pattern.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 import nfa
 from copy import deepcopy
 

@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+'memoize' function.
+It caches arguments and a return value.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 def memoize(func):
     cache = dict()
     def memoized_func(*args):

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+dump NFA and DFA.
+----------------------------------------
+Author: hiratara <hira.tara@gmail.com>
+"""
 from dfareg.nfa2dfa import nfa2dfa
 from dfareg.parser  import Parser
 from dfareg.lexer   import Lexer
