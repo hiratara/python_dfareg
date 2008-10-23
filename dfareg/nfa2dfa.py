@@ -7,7 +7,7 @@ Author: hiratara <hira.tara@gmail.com>
 from dfa import DeterministicFiniteAutomaton
 import memoize
 
-class SubsetsIncludingElem(object):
+class NonDisjointSets(object):
     def __init__(self, sub):
         self.sub   = sub
     def __contains__(self, a_set):
@@ -25,5 +25,5 @@ def nfa2dfa(nfa):
     return DeterministicFiniteAutomaton(
             transition,
             nfa.epsilon_expand( frozenset([ nfa.start ]) ),
-            SubsetsIncludingElem(nfa.accepts)
+            NonDisjointSets(nfa.accepts)
             )
