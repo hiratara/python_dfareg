@@ -4,7 +4,7 @@ parse regular expressions
 ----------------------------------------
 Author: hiratara <hira.tara@gmail.com>
 """
-from lexer import Talken
+from lexer import Token
 from nfabuilder import Character, Star, Concat, Union, Context
 
 class Parser(object):
@@ -36,7 +36,7 @@ class Parser(object):
     def expression(self):
         # expression -> subexpr EOF
         node = self.subexpr()
-        self.match(Talken.EOF)
+        self.match(Token.EOF)
 
         # 構文木を実行し、NFAを作る
         context  = Context()
@@ -46,15 +46,15 @@ class Parser(object):
     def subexpr(self):
         # subexpr    -> seq '|' subexpr | seq
         node = self.seq()
-        if self.look.kind == Talken.OPE_UNION:
-            self.match(Talken.OPE_UNION)
+        if self.look.kind == Token.OPE_UNION:
+            self.match(Token.OPE_UNION)
             node2 = self.subexpr()
             node = Union(node, node2)
         return node
 
     def seq(self):
-        if self.look.kind == Talken.LPAREN \
-           or self.look.kind == Talken.CHARACTER:
+        if self.look.kind == Token.LPAREN \
+           or self.look.kind == Token.CHARACTER:
             # seq -> star seq
             node1 = self.star()
             node2 = self.seq()
@@ -67,20 +67,20 @@ class Parser(object):
     def star(self):
         # star -> factor '*' | factor
         node = self.factor()
-        if self.look.kind == Talken.OPE_STAR:
-            self.match(Talken.OPE_STAR)
+        if self.look.kind == Token.OPE_STAR:
+            self.match(Token.OPE_STAR)
             node = Star(node)
         return node
 
     def factor(self):
-        if self.look.kind == Talken.LPAREN:
+        if self.look.kind == Token.LPAREN:
             # factor -> '(' subexpr ')'
-            self.match(Talken.LPAREN)
+            self.match(Token.LPAREN)
             node = self.subexpr()
-            self.match(Talken.RPAREN)
+            self.match(Token.RPAREN)
             return node
         else:
             # factor -> CHARACTER
             node = Character(self.look.value)
-            self.match(Talken.CHARACTER);
+            self.match(Token.CHARACTER);
             return node

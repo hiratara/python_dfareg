@@ -5,7 +5,7 @@ regular expression lexical analyzer
 Author: hiratara <hira.tara@gmail.com>
 """
 
-class Talken(object):
+class Token(object):
     # トークンの種類
     CHARACTER  = 0
     OPE_UNION  = 1
@@ -31,21 +31,21 @@ class Lexer(object):
     def scan(self):
         if not self.string_list: 
             # 文字がなくなったらEOFトークンを返す
-            return Talken(None, Talken.EOF)
+            return Token(None, Token.EOF)
 
         ch = self.string_list.pop(0)
 
         if ch == u'\\':
             # エスケープ文字の処理。次の文字を文字トークンとして返す
-            return Talken(self.string_list.pop(0), Talken.CHARACTER)
+            return Token(self.string_list.pop(0), Token.CHARACTER)
         elif ch == u'|': 
-            return Talken(ch, Talken.OPE_UNION)
+            return Token(ch, Token.OPE_UNION)
         elif ch == u'(': 
-            return Talken(ch, Talken.LPAREN)
+            return Token(ch, Token.LPAREN)
         elif ch == u')': 
-            return Talken(ch, Talken.RPAREN)
+            return Token(ch, Token.RPAREN)
         elif ch == u'*': 
-            return Talken(ch, Talken.OPE_STAR)
+            return Token(ch, Token.OPE_STAR)
         else: 
             # 通常の文字
-            return Talken(ch, Talken.CHARACTER)
+            return Token(ch, Token.CHARACTER)
