@@ -13,7 +13,8 @@ class Parser(object):
     ----------------------------------------
     expression -> subexpr
     subexpr    -> seq '|' subexpr | seq
-    seq        -> star seq | ε
+    seq        -> subseq | ε
+    subseq     -> star subseq | star
     star       -> factor '*' | factor
     factor     -> '(' subexpr ')' | CHARACTER
     """
@@ -55,14 +56,23 @@ class Parser(object):
     def seq(self):
         if self.look.kind == Token.LPAREN \
            or self.look.kind == Token.CHARACTER:
-            # seq -> star seq
-            node1 = self.star()
-            node2 = self.seq()
-            node  = Concat(node1, node2)
-            return node
+            # seq -> subseq
+            return self.subseq()
         else:
             # seq -> ''
             return Character("")
+
+    def subseq(self):
+        node1 = self.star()
+        if self.look.kind == Token.LPAREN \
+           or self.look.kind == Token.CHARACTER:
+            # subseq -> star subseq
+            node2 = self.subseq()
+            node  = Concat(node1, node2)
+            return node
+        else:
+            # subseq -> star
+            return node1
 
     def star(self):
         # star -> factor '*' | factor
