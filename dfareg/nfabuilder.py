@@ -70,6 +70,9 @@ class Union(object):
 
         return frag
 
+    def __str__(self):
+        return "(%s|%s)" % (self.operand1, self.operand2)
+
 
 class Concat(object):
     def __init__(self, operand1, operand2):
@@ -88,6 +91,9 @@ class Concat(object):
         frag.accepts = frag2.accepts
 
         return frag
+    def __str__(self):
+        return "(%s%s)" % (self.operand1, self.operand2)
+
 
 class Star(object):
     def __init__(self, operand):
@@ -108,6 +114,9 @@ class Star(object):
 
         return frag
 
+    def __str__(self):
+        return "%s*" % self.operand
+
 class Character(object):
     def __init__(self, char):
         self.char = char
@@ -122,3 +131,5 @@ class Character(object):
         frag.accepts = frozenset([s2])
 
         return frag
+    def __str__(self):
+        return self.char

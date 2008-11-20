@@ -12,9 +12,17 @@ class Parser(object):
     parse following language
     ----------------------------------------
     expression -> subexpr
-    subexpr    -> seq '|' subexpr | seq
+    subexpr    -> subexpr '|' seq | seq
+    (
+        subexpr    -> seq _subexpr
+        _subexpr   -> '|' seq _subexpr | ε
+    )
     seq        -> subseq | ε
-    subseq     -> star subseq | star
+    subseq     -> subseq star | star
+    (
+        subseq     -> star _subseq
+        _subseq    -> star _subseq | ε
+    )
     star       -> factor '*' | factor
     factor     -> '(' subexpr ')' | CHARACTER
     """
@@ -45,12 +53,17 @@ class Parser(object):
         return fragment.build()
 
     def subexpr(self):
-        # subexpr    -> seq '|' subexpr | seq
+        # subexpr -> seq _subexpr
         node = self.seq()
-        if self.look.kind == Token.OPE_UNION:
-            self.match(Token.OPE_UNION)
-            node2 = self.subexpr()
-            node = Union(node, node2)
+        while True:
+            if self.look.kind == Token.OPE_UNION:
+                # _subexpr -> '|' seq _subexpr | ε
+                self.match(Token.OPE_UNION)
+                node2 = self.seq()
+                node = Union(node, node2)
+            else:
+                # _subexpr -> ε
+                break
         return node
 
     def seq(self):
@@ -63,16 +76,19 @@ class Parser(object):
             return Character("")
 
     def subseq(self):
-        node1 = self.star()
-        if self.look.kind == Token.LPAREN \
-           or self.look.kind == Token.CHARACTER:
-            # subseq -> star subseq
-            node2 = self.subseq()
-            node  = Concat(node1, node2)
-            return node
-        else:
-            # subseq -> star
-            return node1
+        # subseq -> star _subseq
+        node = self.star()
+        while True:
+            if self.look.kind == Token.LPAREN \
+               or self.look.kind == Token.CHARACTER:
+                # _subseq -> star _subseq
+                node2 = self.star()
+                node  = Concat(node, node2)
+                continue
+            else:
+                # _subseq -> ε
+                break
+        return node
 
     def star(self):
         # star -> factor '*' | factor
