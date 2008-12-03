@@ -70,11 +70,11 @@ class NFABacktrackRuntime(object):
             self.cur_state, self.left = self._select(branches)
             # 残りはバックトラックできるように溜める
             self.branches |= branches
-            if self.debug: 
-                if self.left is None or original_left == self.left:
+            if self.debug and self.left is not None: 
+                if original_left == self.left:
                     char = "''"
                 else:
-                    char = original_left[0]
+                    char = "'%s'" % original_left[0]
                 print "-%s->%s" % (char, self.cur_state), 
         else:
             # 遷移がもうない。状態をNoneにしておく
