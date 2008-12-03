@@ -5,7 +5,7 @@ NFA definition
 Author: hiratara <hira.tara@gmail.com>
 """
 class NFARuntime(object):
-    def __init__(self, NFA):
+    def __init__(self, NFA, debug=False):
         self.NFA = NFA
         self.cur_states = self.NFA.epsilon_expand( 
             frozenset([ self.NFA.start ]) 
@@ -31,12 +31,13 @@ class NFARuntime(object):
 
 
 class NFABacktrackRuntime(object):
-    def __init__(self, NFA):
+    def __init__(self, NFA, debug=False):
         self.NFA = NFA
         self.cur_state = self.NFA.start
         self.left     = None
         self.branches = set()
         self.done     = set()
+        self.debug    = debug
 
     def do_transition(self):
         # 文字列を読み終わったので、Falseを返す
@@ -63,10 +64,17 @@ class NFABacktrackRuntime(object):
         branches = set( filter(lambda x: x not in self.done, branches) )
 
         if branches:
+            original_left = self.left
             # どの選択肢をとるか選ぶ
             self.cur_state, self.left = self._select(branches)
             # 残りはバックトラックできるように溜める
             self.branches |= branches
+            if self.debug: 
+                if self.left is None or original_left == self.left:
+                    char = "''"
+                else:
+                    char = original_left[-1:]
+                print "-%s->%s" % (char, self.cur_state), 
         else:
             # 遷移がもうない。状態をNoneにしておく
             self.cur_state, self.left = None, None
@@ -81,6 +89,10 @@ class NFABacktrackRuntime(object):
     def backtrack(self):
         if self.branches:
             self.cur_state, self.left = self._select(self.branches)
+            if self.debug:
+                print
+                print "backtracked: status=%s, left=%s" \
+                                                   % (self.cur_state, self.left)
             return True
         else:
             return False
@@ -97,12 +109,14 @@ class NFABacktrackRuntime(object):
             if self.is_accept_state(): 
                 # 受理状態についたので、受理。
                 return True
-            elif self.backtrack(): 
-                # ダメだったのでバックトラックして別の経路へ
-                continue
             else:
-                # バックトラックできない。受理しない。
-                return False
+                if self.debug: print "[failed!]", 
+                if self.backtrack(): 
+                    # ダメだったのでバックトラックして別の経路へ
+                    continue
+                else:
+                    # バックトラックできない。受理しない。
+                    return False
 
 
 class NondeterministicFiniteAutomaton(object):
@@ -115,9 +129,9 @@ class NondeterministicFiniteAutomaton(object):
         self.start      = start
         self.accepts    = accepts
 
-    def get_runtime(self):
-        return NFARuntime(self)
-        # return NFABacktrackRuntime(self)
+    def get_runtime(self, debug=False):
+        # return NFARuntime(self, debug)
+        return NFABacktrackRuntime(self, debug)
 
     def epsilon_expand(self, set_):
         # 空文字を辿るべき状態を集めたキュー
