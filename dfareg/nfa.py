@@ -44,6 +44,8 @@ class NFABacktrackRuntime(object):
         if self.left is None: 
             return False
 
+        original_left = self.left
+
         # とりうる遷移
         branches = set()
 
@@ -64,7 +66,6 @@ class NFABacktrackRuntime(object):
         branches = set( filter(lambda x: x not in self.done, branches) )
 
         if branches:
-            original_left = self.left
             # どの選択肢をとるか選ぶ
             self.cur_state, self.left = self._select(branches)
             # 残りはバックトラックできるように溜める
@@ -73,7 +74,7 @@ class NFABacktrackRuntime(object):
                 if self.left is None or original_left == self.left:
                     char = "''"
                 else:
-                    char = original_left[-1:]
+                    char = original_left[0]
                 print "-%s->%s" % (char, self.cur_state), 
         else:
             # 遷移がもうない。状態をNoneにしておく
